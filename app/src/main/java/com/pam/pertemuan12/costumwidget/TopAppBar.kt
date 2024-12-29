@@ -9,9 +9,13 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -25,14 +29,25 @@ fun TopAppBar(
 ) {
     CenterAlignedTopAppBar(
         title = {
-            Text(text = title)
+            Text(
+                text = title,
+                color = Color.White,
+                fontSize = 22.sp,
+                fontWeight = FontWeight.Bold
+            )
         },
         actions = {
-            Icon(
-                imageVector = Icons.Default.Refresh,
-                contentDescription = "",
-                modifier = Modifier.clickable { onRefresh() }
-            )
+            IconButton(
+                onClick = onRefresh,
+                modifier = Modifier
+                    .clickable { onRefresh() }
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Refresh,
+                    contentDescription = "Refresh",
+                    tint = Color.White
+                )
+            }
         },
         modifier = modifier,
         scrollBehavior = scrollBehavior,
@@ -41,10 +56,16 @@ fun TopAppBar(
                 IconButton(onClick = navigateUp) {
                     Icon(
                         imageVector = Icons.Filled.ArrowBack,
-                        contentDescription = null
+                        contentDescription = "Back",
+                        tint = Color.White
                     )
                 }
             }
-        }
+        },
+        colors = topAppBarColors(
+            containerColor = Color(0xFF6200EE),
+            titleContentColor = Color.White,
+            actionIconContentColor = Color.White
+        )
     )
 }
