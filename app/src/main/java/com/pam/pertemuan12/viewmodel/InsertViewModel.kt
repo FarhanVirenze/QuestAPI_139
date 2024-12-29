@@ -17,6 +17,17 @@ class InsertViewModel(private val mhs: MahasiswaRepository) : ViewModel() {
         uiState = InsertUiState(insertUiEvent = insertUiEvent)
     }
 
+    fun isFormValid(): Boolean {
+        return uiState.insertUiEvent.run {
+            nim.isNotBlank() &&
+                    nama.isNotBlank() &&
+                    alamat.isNotBlank() &&
+                    jenis_kelamin.isNotBlank() &&
+                    kelas.isNotBlank() &&
+                    angkatan.isNotBlank()
+        }
+    }
+
     suspend fun insertMhs() {
         viewModelScope.launch {
             try {
@@ -36,7 +47,7 @@ data class InsertUiEvent(
     val nim: String ="",
     val nama: String ="",
     val alamat: String ="",
-    val jeniskelamin: String ="",
+    val jenis_kelamin: String ="",
     val kelas: String ="",
     val angkatan: String =""
 )
@@ -45,7 +56,7 @@ fun InsertUiEvent.toMhs(): Mahasiswa = Mahasiswa(
     nim = nim,
     nama = nama,
     alamat = alamat,
-    jeniskelamin = jeniskelamin,
+    jenis_kelamin = jenis_kelamin,
     kelas = kelas,
     angkatan = angkatan
 )
@@ -58,7 +69,7 @@ fun Mahasiswa.toInsertUiEvent(): InsertUiEvent = InsertUiEvent(
     nim = nim,
     nama = nama,
     alamat = alamat,
-    jeniskelamin = jeniskelamin,
+    jenis_kelamin = jenis_kelamin,
     kelas = kelas,
     angkatan = angkatan
 )
