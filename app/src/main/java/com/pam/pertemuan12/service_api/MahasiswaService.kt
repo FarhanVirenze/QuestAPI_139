@@ -2,13 +2,7 @@ package com.pam.pertemuan12.service_api
 
 import com.pam.pertemuan12.model.Mahasiswa
 import retrofit2.Response
-import retrofit2.http.Body
-import retrofit2.http.Headers
-import retrofit2.http.GET
-import retrofit2.http.PUT
-import retrofit2.http.POST
-import retrofit2.http.DELETE
-import retrofit2.http.Query
+import retrofit2.http.*
 
 interface MahasiswaService {
     @Headers(
@@ -18,15 +12,18 @@ interface MahasiswaService {
     @GET("bacamahasiswa.php")
     suspend fun getMahasiswa(): List<Mahasiswa>
 
-    @GET("baca1mahasiswa.php/{nim}")
-    suspend fun getMahasiswaById(@Query("nim") nim:String):Mahasiswa
+    @GET("baca1mahasiswa.php")
+    suspend fun getMahasiswaById(@Query("nim") nim: String): Mahasiswa
 
     @POST("insertmahasiswa.php")
-    suspend fun insertMahasiswa(@Body mahasiswa: Mahasiswa)
+    suspend fun insertMahasiswa(@Body mahasiswa: Mahasiswa): Response<Void>
 
-    @PUT("editmahasiswa.php/{nim}")
-    suspend fun updateMahasiswa(@Query("nim") nim:String, @Body mahasiswa: Mahasiswa)
+    @PUT("editmahasiswa.php")
+    suspend fun updateMahasiswa(
+        @Query("nim") nim: String,
+        @Body mahasiswa: Mahasiswa
+    ): Response<Void>
 
-    @DELETE("deletemahasiswa.php/{nim}")
-    suspend fun deleteMahasiswa(@Query("nim") nim:String): Response<Void>
+    @DELETE("deletemahasiswa.php")
+    suspend fun deleteMahasiswa(@Query("nim") nim: String): Response<Void>
 }
