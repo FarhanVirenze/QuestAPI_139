@@ -15,8 +15,15 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Face
+import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -29,6 +36,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -46,7 +55,7 @@ import com.pam.pertemuan12.viewmodel.PenyediaViewModel
 
 object DestinasiHome : DestinasiNavigasi {
     override val route = "home"
-    override val titleRes = "Home Mhs"
+    override val titleRes = "Daftar Mahasiswa"
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -58,6 +67,9 @@ fun HomeScreen(
     viewModel: HomeViewModel = viewModel(factory = PenyediaViewModel.Factory)
 ){
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+    val showDialog = remember { mutableStateOf(false) }
+    val mahasiswaToDelete = remember { mutableStateOf<Mahasiswa?>(null) }
+
     Scaffold(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
@@ -79,14 +91,40 @@ fun HomeScreen(
                 Icon(imageVector = Icons.Default.Add, contentDescription = "Add Mahasiswa")
             }
         },
-    ){innerPadding ->
+    ) { innerPadding ->
         HomeStatus(
             homeUiState = viewModel.mhsUiState,
-            retryAction = { viewModel.getMhs() }, modifier = Modifier.padding(innerPadding),
-            onDetailClick = onDetailClick, onDeleteClick = {
-                viewModel.deleteMhs(it.nim)
+            retryAction = { viewModel.getMhs() },
+            modifier = Modifier.padding(innerPadding),
+            onDetailClick = onDetailClick,
+            onDeleteClick = {
+                mahasiswaToDelete.value = it
+                showDialog.value = true
             }
         )
+
+        if (showDialog.value) {
+            AlertDialog(
+                onDismissRequest = { showDialog.value = false },
+                title = { Text("Konfirmasi Hapus") },
+                text = { Text("Apakah Anda yakin ingin menghapus mahasiswa ini?") },
+                confirmButton = {
+                    Button(onClick = {
+                        mahasiswaToDelete.value?.let { mhs ->
+                            viewModel.deleteMhs(mhs.nim)
+                        }
+                        showDialog.value = false
+                    }) {
+                        Text("Hapus")
+                    }
+                },
+                dismissButton = {
+                    Button(onClick = { showDialog.value = false }) {
+                        Text("Batal")
+                    }
+                }
+            )
+        }
     }
 }
 
@@ -179,42 +217,94 @@ fun MhsCard(
     onDeleteClick: (Mahasiswa) -> Unit = {}
 ) {
     Card(
-        modifier = modifier,
+        modifier = modifier.fillMaxWidth().padding(8.dp),
         shape = MaterialTheme.shapes.medium,
         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
-    ){
+    ) {
         Column(
             modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ){
+            verticalArrangement = Arrangement.spacedBy(6.dp)
+        ) {
+            // Name and Delete Button Row
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
-            ){
+            ) {
+                Icon(imageVector = Icons.Filled.Person, contentDescription = "")
+                Spacer(modifier = Modifier.padding(4.dp))
                 Text(
                     text = mahasiswa.nama,
                     style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier.weight(1f)
                 )
-                Spacer(Modifier.weight(1f))
                 IconButton(onClick = { onDeleteClick(mahasiswa) }) {
                     Icon(
                         imageVector = Icons.Default.Delete,
-                        contentDescription = null,
+                        contentDescription = "Delete",
+                        tint = MaterialTheme.colorScheme.error
                     )
                 }
+            }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(imageVector = Icons.Filled.AccountCircle, contentDescription = "NIM")
+                Spacer(modifier = Modifier.padding(4.dp))
                 Text(
                     text = mahasiswa.nim,
-                    style = MaterialTheme.typography.titleMedium,
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.weight(1f)
                 )
             }
-            Text(
-                text = mahasiswa.kelas,
-                style = MaterialTheme.typography.titleMedium,
-            )
-            Text(
-                text = mahasiswa.alamat,
-                style = MaterialTheme.typography.titleMedium,
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(imageVector = Icons.Filled.Face, contentDescription = "Jenis Kelamin")
+                Spacer(modifier = Modifier.padding(4.dp))
+                Text(
+                    text = mahasiswa.jenis_kelamin,
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.weight(1f)
+                )
+            }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(imageVector = Icons.Filled.DateRange, contentDescription = "Angkatan")
+                Spacer(modifier = Modifier.padding(4.dp))
+                Text(
+                    text = mahasiswa.angkatan,
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.weight(1f)
+                )
+            }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(imageVector = Icons.Filled.Edit, contentDescription = "Kelas")
+                Spacer(modifier = Modifier.padding(4.dp))
+                Text(
+                    text = mahasiswa.kelas,
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.weight(1f)
+                )
+            }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(imageVector = Icons.Filled.LocationOn, contentDescription = "Alamat")
+                Spacer(modifier = Modifier.padding(4.dp))
+                Text(
+                    text = mahasiswa.alamat,
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.weight(1f)
+                )
+            }
         }
     }
 }
