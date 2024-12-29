@@ -42,6 +42,7 @@ class HomeViewModel(private val mhs: MahasiswaRepository) : ViewModel() {
         viewModelScope.launch {
             try {
                 mhs.deleteMahasiswa(nim)
+                getMhs()
             }catch (e: IOException){
                 HomeUiState.Error
             }catch (e: HttpException){
