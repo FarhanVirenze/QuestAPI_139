@@ -30,7 +30,7 @@ import kotlinx.coroutines.launch
 
 object DestinasiEntry : DestinasiNavigasi {
     override val route = "item_entry"
-    override val titleRes = "Entry Mhs"
+    override val titleRes = "Tambah Mahasiswa"
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -62,6 +62,7 @@ fun EntryMhsScreen(
                     navigateBack()
                 }
             },
+            isSaveEnabled = viewModel.isFormValid(),
             modifier = Modifier
                 .padding(innerPadding)
                 .verticalScroll(rememberScrollState())
@@ -75,6 +76,7 @@ fun EntryBody(
     insertUiState: InsertUiState,
     onSiswaValueChange: (InsertUiEvent) -> Unit,
     onSaveClick: () -> Unit,
+    isSaveEnabled: Boolean,
     modifier: Modifier = Modifier
 ){
     Column(
@@ -89,7 +91,8 @@ fun EntryBody(
         Button(
             onClick = onSaveClick,
             shape = MaterialTheme.shapes.small,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            enabled = isSaveEnabled
         ){
             Text(text = "Simpan")
         }
@@ -114,7 +117,8 @@ fun FormInput(
             label = { Text("Nama") },
             modifier = Modifier.fillMaxWidth(),
             enabled = enabled,
-            singleLine = true
+            singleLine = true,
+            isError = insertUiEvent.nama.isBlank()
         )
         OutlinedTextField(
             value = insertUiEvent.nim,
@@ -122,7 +126,8 @@ fun FormInput(
             label = { Text("NIM") },
             modifier = Modifier.fillMaxWidth(),
             enabled = enabled,
-            singleLine = true
+            singleLine = true,
+            isError = insertUiEvent.nama.isBlank()
         )
         OutlinedTextField(
             value = insertUiEvent.alamat,
@@ -130,15 +135,17 @@ fun FormInput(
             label = { Text("Alamat") },
             modifier = Modifier.fillMaxWidth(),
             enabled = enabled,
-            singleLine = true
+            singleLine = true,
+            isError = insertUiEvent.nama.isBlank()
         )
         OutlinedTextField(
-            value = insertUiEvent.jeniskelamin,
-            onValueChange = { onValueChange(insertUiEvent.copy(jeniskelamin = it)) },
+            value = insertUiEvent.jenis_kelamin,
+            onValueChange = { onValueChange(insertUiEvent.copy(jenis_kelamin = it)) },
             label = { Text("Jenis Kelamin") },
             modifier = Modifier.fillMaxWidth(),
             enabled = enabled,
-            singleLine = true
+            singleLine = true,
+            isError = insertUiEvent.nama.isBlank()
         )
         OutlinedTextField(
             value = insertUiEvent.kelas,
@@ -146,7 +153,8 @@ fun FormInput(
             label = { Text("Kelas") },
             modifier = Modifier.fillMaxWidth(),
             enabled = enabled,
-            singleLine = true
+            singleLine = true,
+            isError = insertUiEvent.nama.isBlank()
         )
         OutlinedTextField(
             value = insertUiEvent.angkatan,
@@ -154,7 +162,8 @@ fun FormInput(
             label = { Text("Angkatan") },
             modifier = Modifier.fillMaxWidth(),
             enabled = enabled,
-            singleLine = true
+            singleLine = true,
+            isError = insertUiEvent.nama.isBlank()
         )
         if (enabled) {
             Text(
