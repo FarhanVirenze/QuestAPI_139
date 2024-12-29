@@ -13,31 +13,55 @@ interface MahasiswaRepository {
 }
 
 class NetworkMahasiswaRepository(
-    private val MahasiswaAPIService: MahasiswaService
-): MahasiswaRepository {
-    override suspend fun insertMahasiswa(mahasiswa: Mahasiswa) {
-        MahasiswaAPIService.insertMahasiswa(mahasiswa)
+    private val mahasiswaAPIService: MahasiswaService
+) : MahasiswaRepository {
+
+    override suspend fun getMahasiswa(): List<Mahasiswa> {
+        try {
+            return mahasiswaAPIService.getMahasiswa()
+        } catch (e: IOException) {
+            throw IOException("Failed to fetch mahasiswa list. Network error occurred.", e)
+        }
     }
+
+    override suspend fun getMahasiswaById(nim: String): Mahasiswa {
+        try {
+            return mahasiswaAPIService.getMahasiswaById(nim)
+        } catch (e: IOException) {
+            throw IOException("Failed to fetch mahasiswa with NIM: $nim. Network error occurred.", e)
+        }
+    }
+
+    override suspend fun insertMahasiswa(mahasiswa: Mahasiswa) {
+        try {
+            val response = mahasiswaAPIService.insertMahasiswa(mahasiswa)
+            if (!response.isSuccessful) {
+                throw IOException("Failed to insert mahasiswa. HTTP Status code: ${response.code()}")
+            }
+        } catch (e: IOException) {
+            throw IOException("Failed to insert mahasiswa. Network error occurred.", e)
+        }
+    }
+
     override suspend fun updateMahasiswa(nim: String, mahasiswa: Mahasiswa) {
-        MahasiswaAPIService.updateMahasiswa(nim, mahasiswa)
+        try {
+            val response = mahasiswaAPIService.updateMahasiswa(nim, mahasiswa)
+            if (!response.isSuccessful) {
+                throw IOException("Failed to update mahasiswa with NIM: $nim. HTTP Status code: ${response.code()}")
+            }
+        } catch (e: IOException) {
+            throw IOException("Failed to update mahasiswa. Network error occurred.", e)
+        }
     }
 
     override suspend fun deleteMahasiswa(nim: String) {
         try {
-            val response = MahasiswaAPIService.deleteMahasiswa(nim)
+            val response = mahasiswaAPIService.deleteMahasiswa(nim)
             if (!response.isSuccessful) {
-                throw IOException("failed to delete mahasiswa. HTTP Status code: ${response.code()}")
-            } else {
-                response.message()
-                println(response.message())
+                throw IOException("Failed to delete mahasiswa with NIM: $nim. HTTP Status code: ${response.code()}")
             }
-        } catch (e:Exception){
-            throw e
+        } catch (e: IOException) {
+            throw IOException("Failed to delete mahasiswa. Network error occurred.", e)
         }
-    }
-
-    override suspend fun getMahasiswa(): List<Mahasiswa> = MahasiswaAPIService.getMahasiswa()
-    override suspend fun getMahasiswaById(nim: String): Mahasiswa {
-        return MahasiswaAPIService.getMahasiswaById(nim)
     }
 }
