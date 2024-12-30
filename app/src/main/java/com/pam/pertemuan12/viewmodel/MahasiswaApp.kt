@@ -18,7 +18,7 @@ fun MahasiswaApp(modifier: Modifier = Modifier) {
     Scaffold(
         modifier = Modifier
             .nestedScroll(scrollBehavior.nestedScrollConnection)
-            .then(modifier), // Menggabungkan modifier untuk fleksibilitas
+            .then(modifier),
     ) {
         Surface(
             modifier = Modifier
