@@ -141,7 +141,7 @@ fun HomeStatus(
         is HomeUiState.Success ->
             if(homeUiState.mahasiswa.isEmpty()){
                 return Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text(text = "Tidak ada data kontak")
+                    Text(text = "tidak ada data mahasiswa")
                 }
             }else {
                 MhsLayout(
